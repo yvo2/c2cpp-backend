@@ -14,4 +14,7 @@ export class UserNew {
   @Field()
   @MaxLength(30)
   email: string;
+
+  @Field()
+  password: string;
 }

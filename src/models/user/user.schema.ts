@@ -1,7 +1,10 @@
-import * as mongoose from 'mongoose';
+import { Schema, mongo } from 'mongoose';
 
-export const UserSchema = new mongoose.Schema({
-  id: mongoose.Schema.Types.ObjectId,
+export const UserSchema = new Schema({
+  id: {
+    type: Schema.Types.ObjectId,
+    default: () => new mongo.ObjectId
+  },
   email: String,
   firstName: String,
   lastName: String,
