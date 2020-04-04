@@ -13,7 +13,7 @@ import { AuthModule } from './auth/auth.module';
       autoSchemaFile: true,
       context: ({ req }) => ({ req }),
     }),
-    MongooseModule.forRoot('mongodb://localhost/nest'),
+    MongooseModule.forRoot(process.env.DATABASE || 'mongodb://localhost/c2c'),
 
     AuthModule,
     UserModule,
