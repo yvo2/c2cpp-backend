@@ -1,9 +1,11 @@
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { UserNew } from './dto/user.new';
 import { UserArgs } from './dto/user.args';
 import { User } from './user.model';
 import { UserService } from './user.service';
+import { CurrentUser } from '../../auth/gql-current-user';
+import { GqlAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Resolver(of => User)
 export class UserResolver {
@@ -16,6 +18,13 @@ export class UserResolver {
       throw new NotFoundException(id);
     }
     return user;
+  }
+
+  @Query(returns => User)
+  @UseGuards(GqlAuthGuard)
+  async self(@CurrentUser() user: User): Promise<User> {
+    const userDb = await this.userService.findOneById(user.id);
+    return userDb;
   }
 
   @Query(returns => [User])
@@ -32,7 +41,7 @@ export class UserResolver {
   }
 
   @Mutation(returns => Boolean)
-  async deleteUser(@Args('id') id: string) {
-    return this.userService.remove(id);
+  async delete(@CurrentUser() user: User) {
+    return this.userService.remove(user.id);
   }
 }
