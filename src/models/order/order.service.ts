@@ -116,7 +116,7 @@ export class OrderService implements OnModuleInit {
     return await this.orderModel.find();
   }
 
-  async assign(id: string, user: User, arrival: string): Promise<OrderInterface> {
+  async assign(id: string, user: any, arrival: string): Promise<OrderInterface> {
     const order = await this.findOneById(id);
 
     if (!order) {
@@ -129,7 +129,7 @@ export class OrderService implements OnModuleInit {
 
     // Send telegram message
     const telegramId = order.sender.split('//')[1];
-    this.bot.sendMessage(telegramId, "Good news! " + user.firstName + " " + user.lastName + " just accepted your order, and it will be delivered in about " + arrival + ".");
+    this.bot.sendMessage(telegramId, "Good news! " + user.payload.firstName + " " + user.payload.lastName + " just accepted your order, and it will be delivered in about " + arrival + ".");
 
     order.assigned = user.email;
     order.arrival = arrival;
@@ -137,7 +137,7 @@ export class OrderService implements OnModuleInit {
     return order.save();
   }
 
-  async complete(id: string, user: User): Promise<OrderInterface> {
+  async complete(id: string, user: any): Promise<OrderInterface> {
     const order = await this.findOneById(id);
 
     if (!order) {
@@ -154,7 +154,7 @@ export class OrderService implements OnModuleInit {
 
     // Send telegram message
     const telegramId = order.sender.split('//')[1];
-    this.bot.sendMessage(telegramId, "Your order was completed by " + user.firstName + " " + user.lastName + "! Thank you for using this service, and stay healthy!");
+    this.bot.sendMessage(telegramId, "Your order was completed by " + user.payload.firstName + " " + user.payload.lastName + "! Thank you for using this service, and stay healthy!");
 
     order.status = 'COMPLETED';
     return order.save();
