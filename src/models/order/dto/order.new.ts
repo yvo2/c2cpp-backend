@@ -3,6 +3,12 @@ import { MaxLength } from 'class-validator';
 
 @InputType()
 export class OrderNew {
+  constructor(text: string = '', sender: string = '', address: string = '') {
+    this.text = text;
+    this.sender = sender;
+    this.address = address;
+  }
+
   @Field()
   @MaxLength(30)
   text: string;
