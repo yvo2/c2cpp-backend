@@ -100,7 +100,12 @@ export class OrderService implements OnModuleInit {
   }
 
   async findOneById(id: string): Promise<OrderInterface> {
-    return await this.orderModel.findOne(order => order && order.id.toString() === id);
+    const list = (await this.findAll()).filter(order => order.id.toString() === id);
+    if (list.length === 0) {
+      return null;
+    }
+
+    return list[0];
   }
 
   async findAllByEmail(email: string): Promise<OrderInterface[]> {
@@ -113,6 +118,10 @@ export class OrderService implements OnModuleInit {
 
   async assign(id: string, user: User, arrival: string): Promise<OrderInterface> {
     const order = await this.findOneById(id);
+
+    if (!order) {
+      throw Error("ORDER_NOT_FOUND");
+    }
 
     if (order.assigned) {
       throw Error("ORDER_ALREADY_ASSIGNED");
@@ -127,8 +136,16 @@ export class OrderService implements OnModuleInit {
   async complete(id: string, user: User): Promise<OrderInterface> {
     const order = await this.findOneById(id);
 
+    if (!order) {
+      throw Error("ORDER_NOT_FOUND");
+    }
+
     if (!order.assigned || order.assigned !== user.email) {
       throw Error("NOT_YOUR_ORDER");
+    }
+
+    if (order.status !== 'OPEN') {
+      throw Error("ORDER_NOT_OPEN");
     }
 
     order.status = 'COMPLETED';
