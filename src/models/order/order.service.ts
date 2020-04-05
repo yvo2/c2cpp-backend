@@ -37,6 +37,10 @@ export class OrderService implements OnModuleInit {
   }
 
   async onMessage(msg: TelegramBot.Message) {
+    if (msg.text.startsWith('/')) {
+      return;
+    }
+
     const getContext = (id: number): Context => {
       const list = this.context.filter(ctx => ctx.id === id);
       if (list.length === 0) {
