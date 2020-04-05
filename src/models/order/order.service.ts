@@ -6,6 +6,7 @@ import { OrderNew } from './dto/order.new';
 import { Order } from './order.model';
 import { OrderInterface } from './order.interface';
 import TelegramBot from 'node-telegram-bot-api';
+import { User } from '../user/user.model';
 
 class Context {
   id: number = 0;
@@ -93,22 +94,33 @@ export class OrderService implements OnModuleInit {
     }
   }
 
-  async create(data: any): Promise<Order> {
+  async create(data: any): Promise<OrderInterface> {
     data.status = 'OPEN';
     const createdOrder = new this.orderModel(data);
     return createdOrder.save();
   }
 
-  async findOneById(id: string): Promise<Order> {
-    return this.orderModel.findOne(order => order && order.id.toString() === id);
+  async findOneById(id: string): Promise<OrderInterface> {
+    return await this.orderModel.findOne(order => order && order.id.toString() === id);
   }
 
-  async findAllByUser(userId: string): Promise<Order[]> {
-    return this.orderModel.find(order => order && order.assigned === userId);
+  async findAllByEmail(email: string): Promise<OrderInterface[]> {
+    return (await this.findAll()).filter(order => order && order.assigned === email);
   }
 
-  async findAll(): Promise<Order[]> {
-    return this.orderModel.find();
+  async findAll(): Promise<OrderInterface[]> {
+    return await this.orderModel.find();
+  }
+
+  async assign(id: string, user: User): Promise<OrderInterface> {
+    const order = await this.findOneById(id);
+
+    if (order.assigned) {
+      throw Error("ORDER_ALREADY_ASSIGNED");
+    }
+
+    order.assigned = user.email;
+    return order.save();
   }
 
   /* async remove(id: string): Promise<boolean> {
