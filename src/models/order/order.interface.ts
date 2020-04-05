@@ -6,5 +6,6 @@ export interface OrderInterface extends Document {
   readonly text: string;
   readonly sender: string;
   readonly status: string;
+  readonly address: string;
   readonly assigned?: User;
 }

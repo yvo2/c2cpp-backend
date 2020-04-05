@@ -8,5 +8,6 @@ export const OrderSchema = new Schema({
   text: String,
   sender: String,
   status: String,
-  assigned: String
+  assigned: String,
+  address: String
 });

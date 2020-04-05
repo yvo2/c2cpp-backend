@@ -15,6 +15,9 @@ export class Order {
   @Field()
   status: string;
 
+  @Field()
+  address: string;
+
   @Field(type => User, { nullable: true })
   assigned?: User;
 }
