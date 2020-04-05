@@ -25,13 +25,15 @@ export class OrderService implements OnModuleInit {
   context: Context[] = [];
 
   onModuleInit() {
-    this.bot = new TelegramBot(process.env.TELEGRAM_BOT, { polling: true });
+    if (process.env.TELEGRAM_BOT) {
+      this.bot = new TelegramBot(process.env.TELEGRAM_BOT, { polling: true });
 
-    this.bot.on('message', msg => {
-      this.onMessage(msg);
-    });
+      this.bot.on('message', msg => {
+        this.onMessage(msg);
+      });
 
-    this.bot.on('polling_error', (err) => console.log(err));
+      this.bot.on('polling_error', (err) => console.log(err));
+    }
   }
 
   async onMessage(msg: TelegramBot.Message) {
@@ -66,7 +68,7 @@ export class OrderService implements OnModuleInit {
       ctx.id = msg.from.id;
       ctx.state = 'EXPECTING_ORDER';
       ctx.text = msg.text;
-      ctx.sender = msg.from.first_name + '//' + msg.from.username;
+      ctx.sender = msg.from.first_name + '//' + msg.from.id;
       answer(ctx, "Thank you for reaching out! I've added that to the order list! Is there anything else you would like to receive? [Answer \"no\" to continue]")
       setContext(ctx);
     } else if (ctx.state === 'EXPECTING_ORDER' && msg.text.toLowerCase() !== 'no') {
