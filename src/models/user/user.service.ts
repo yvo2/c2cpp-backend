@@ -21,7 +21,11 @@ export class UserService {
   }
 
   async findOneByEmail(email: string): Promise<UserInterface | undefined> {
-    return await this.userModel.findOne(user => user && user.email === email);
+    const list = (await this.userModel.find()).filter(user => user.email === email);
+    if (list.length === 0) {
+      return null;
+    }
+    return list[0];
   }
 
   async remove(id: string): Promise<UserInterface> {
