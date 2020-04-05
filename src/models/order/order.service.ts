@@ -148,8 +148,8 @@ export class OrderService implements OnModuleInit {
       throw Error("NOT_YOUR_ORDER");
     }
 
-    if (order.status !== 'OPEN') {
-      throw Error("ORDER_NOT_OPEN");
+    if (order.status !== 'ASSIGNED') {
+      throw Error("ORDER_NOT_ASSIGNED");
     }
 
     // Send telegram message
