@@ -127,6 +127,10 @@ export class OrderService implements OnModuleInit {
       throw Error("ORDER_ALREADY_ASSIGNED");
     }
 
+    // Send telegram message
+    const telegramId = order.sender.split('//')[1];
+    this.bot.sendMessage(telegramId, "Good news! " + user.firstName + " " + user.lastName + " just accepted your order, and it will be delivered in about " + arrival + ".");
+
     order.assigned = user.email;
     order.arrival = arrival;
     order.status = 'ASSIGNED';
@@ -147,6 +151,10 @@ export class OrderService implements OnModuleInit {
     if (order.status !== 'OPEN') {
       throw Error("ORDER_NOT_OPEN");
     }
+
+    // Send telegram message
+    const telegramId = order.sender.split('//')[1];
+    this.bot.sendMessage(telegramId, "Your order was completed by " + user.firstName + " " + user.lastName + "! Thank you for using this service, and stay healthy!");
 
     order.status = 'COMPLETED';
     return order.save();
