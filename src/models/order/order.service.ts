@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose'; 
 
 import { OrderNew } from './dto/order.new';
-import { Order } from './order.model';
 import { OrderInterface } from './order.interface';
 import TelegramBot from 'node-telegram-bot-api';
 import { User } from '../user/user.model';
@@ -112,7 +111,7 @@ export class OrderService implements OnModuleInit {
     return await this.orderModel.find();
   }
 
-  async assign(id: string, user: User): Promise<OrderInterface> {
+  async assign(id: string, user: User, arrival: string): Promise<OrderInterface> {
     const order = await this.findOneById(id);
 
     if (order.assigned) {
@@ -120,6 +119,19 @@ export class OrderService implements OnModuleInit {
     }
 
     order.assigned = user.email;
+    order.arrival = arrival;
+    order.status = 'ASSIGNED';
+    return order.save();
+  }
+
+  async complete(id: string, user: User): Promise<OrderInterface> {
+    const order = await this.findOneById(id);
+
+    if (!order.assigned || order.assigned !== user.email) {
+      throw Error("NOT_YOUR_ORDER");
+    }
+
+    order.status = 'COMPLETED';
     return order.save();
   }
 

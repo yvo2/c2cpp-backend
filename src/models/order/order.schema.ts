@@ -9,5 +9,6 @@ export const OrderSchema = new Schema({
   sender: String,
   status: String,
   assigned: String,
-  address: String
+  address: String,
+  arrival: String
 });

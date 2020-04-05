@@ -20,4 +20,7 @@ export class Order {
 
   @Field(type => User, { nullable: true })
   assigned?: User;
+
+  @Field({ nullable: true })
+  arrival?: string;
 }

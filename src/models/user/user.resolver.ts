@@ -1,7 +1,7 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UserNew } from './dto/user.new';
-import { User } from './user.model';
+import { User, UserWithAccess } from './user.model';
 import { UserService } from './user.service';
 import { CurrentUser } from '../../auth/gql-current-user';
 import { GqlAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -35,10 +35,10 @@ export class UserResolver {
     return userDb;
   }
 
-  @Mutation(returns => User)
+  @Mutation(returns => UserWithAccess)
   async register(
     @Args('newUserData') newUserData: UserNew,
-  ): Promise<User> {
+  ): Promise<UserWithAccess> {
     const existingUser = await this.userService.findOneByEmail(newUserData.email);
 
     if (existingUser) {
@@ -48,7 +48,10 @@ export class UserResolver {
     newUserData.password = await hash(newUserData.password, 10);
 
     const user = await this.userService.create(newUserData);
-    return user;
+
+    const access = await this.userService.login(user);
+
+    return new UserWithAccess(user, access);
   }
 
   @Mutation(returns => Boolean)

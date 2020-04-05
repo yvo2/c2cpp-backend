@@ -56,9 +56,19 @@ export class OrderResolver {
   @UseGuards(GqlAuthGuard)
   async assignToMe(
     @Args('orderId') id: string,
+    @Args('arrival') arrival: string,
     @CurrentUser() user: User,
   ): Promise<Order> {
-    return await this.convert(await this.orderService.assign(id, user));
+    return await this.convert(await this.orderService.assign(id, user, arrival));
+  }
+
+  @Mutation(returns => Order)
+  @UseGuards(GqlAuthGuard)
+  async completeOrder(
+    @Args('orderId') id: string,
+    @CurrentUser() user: User,
+  ): Promise<Order> {
+    return await this.convert(await this.orderService.complete(id, user));
   }
 
   @Mutation(returns => Boolean)
